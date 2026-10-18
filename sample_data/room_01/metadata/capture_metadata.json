@@ -1,0 +1,18 @@
+{
+  "room_id": "room_01",
+  "room_type": "",
+  "capture_device": "",
+  "resolution": "",
+  "fps": "",
+  "approximate_dimensions": {
+    "length_m": null,
+    "width_m": null,
+    "height_m": null
+  },
+  "capture_date": "",
+  "capture_method": "smartphone_video",
+  "lighting_conditions": "",
+  "number_of_images": null,
+  "video_duration_seconds": null,
+  "notes": ""
+}

@@ -1,0 +1,10 @@
+{
+  "room_id": "room_01",
+  "engine": "opencv_sfm",
+  "feature_detector": "SIFT",
+  "frames_processed": 35,
+  "total_3d_points": 1530,
+  "output_model": "output\\room_01.glb",
+  "output_format": "glb",
+  "status": "success"
+}
