@@ -17,25 +17,11 @@ interface ModelViewerProps {
 }
 
 /** Inner component that actually loads the GLTF — must only render when URL is valid. */
-function LoadedModel({ url, onLoaded, onError }: ModelViewerProps) {
+function LoadedModel({ url, onLoaded }: Omit<ModelViewerProps, 'onError'>) {
   const groupRef = useRef<THREE.Group>(null)
   const { camera } = useThree()
-  const [loadError, setLoadError] = useState(false)
-
-  let gltf: ReturnType<typeof useGLTF> | null = null
-  try {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    gltf = useGLTF(url)
-  } catch {
-    // useGLTF throws if the file is missing; we'll catch it in the error boundary below.
-    if (!loadError) {
-      setLoadError(true)
-      onError?.('Unable to load the 3D environment.')
-    }
-    return null
-  }
-
-  const scene = gltf?.scene
+  const gltf = useGLTF(url)
+  const scene = gltf.scene
 
   // Compute bounding box and position camera on first load
   const boundingInfo = useMemo(() => {
@@ -65,6 +51,30 @@ function LoadedModel({ url, onLoaded, onError }: ModelViewerProps) {
       -center.z * scale,
     )
 
+    // Configure materials for interior room viewing
+    scene.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh
+        if (mesh.material) {
+          if (Array.isArray(mesh.material)) {
+            mesh.material.forEach((mat) => {
+              mat.side = THREE.DoubleSide
+            })
+          } else {
+            mesh.material.side = THREE.DoubleSide
+          }
+        }
+      }
+      if ((child as THREE.Points).isPoints) {
+        const points = child as THREE.Points
+        if (points.material) {
+          const mat = points.material as THREE.PointsMaterial
+          mat.size = 0.04
+          mat.sizeAttenuation = true
+        }
+      }
+    })
+
     // Place camera at edge of the model, at eye height, looking inward
     camera.position.set(0, 1.6, (boundingInfo.size.z * scale) / 2 + 1)
     camera.lookAt(0, 1.6, 0)
@@ -72,7 +82,7 @@ function LoadedModel({ url, onLoaded, onError }: ModelViewerProps) {
     onLoaded?.()
   }, [boundingInfo, scene, camera, onLoaded])
 
-  if (!scene || loadError) return null
+  if (!scene) return null
 
   return (
     <group ref={groupRef}>
@@ -104,5 +114,5 @@ export default function ModelViewer({ url, onLoaded, onError }: ModelViewerProps
 
   if (available === null || available === false) return null
 
-  return <LoadedModel url={url} onLoaded={onLoaded} onError={onError} />
+  return <LoadedModel url={url} onLoaded={onLoaded} />
 }

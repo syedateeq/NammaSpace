@@ -21,7 +21,9 @@ except ImportError:
 
 def parse_args():
     default_base = Path(__file__).resolve().parent.parent
-    default_input = default_base.parent / "sample_data" / "room_01" / "video" / "room_01_capture.mp4"
+    default_input = default_base.parent / "sample_data" / "room_01" / "video" / "room_01_capture1.mp4"
+    if not default_input.exists():
+        default_input = default_base.parent / "sample_data" / "room_01" / "video" / "room_01_capture.mp4"
     default_output = default_base / "frames"
     default_logs = default_base / "logs"
 
@@ -41,14 +43,20 @@ def parse_args():
     parser.add_argument(
         "--interval",
         type=float,
-        default=1.0,
-        help="Frame extraction interval in seconds (default: 1.0 second per frame)"
+        default=0.4,
+        help="Frame extraction interval in seconds (default: 0.4 second per frame)"
     )
     parser.add_argument(
         "--min-blur-score",
         type=float,
-        default=30.0,
-        help="Minimum Laplacian variance threshold to reject blurry frames (default: 30.0)"
+        default=20.0,
+        help="Minimum Laplacian variance threshold to reject blurry frames (default: 20.0)"
+    )
+    parser.add_argument(
+        "--clear-existing",
+        action="store_true",
+        default=True,
+        help="Clear existing frames in output directory before extracting (default: True)"
     )
     parser.add_argument(
         "--log-dir",
@@ -59,7 +67,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def extract_frames(video_path: str, output_dir: str, interval_sec: float, min_blur: float, log_dir: str):
+def extract_frames(video_path: str, output_dir: str, interval_sec: float, min_blur: float, log_dir: str, clear_existing: bool = True):
     v_path = Path(video_path)
     out_dir = Path(output_dir)
     l_dir = Path(log_dir)
@@ -69,7 +77,7 @@ def extract_frames(video_path: str, output_dir: str, interval_sec: float, min_bl
         print(f"\n[ERROR] Input video does not exist: {v_path}")
         print("\n--> Real indoor capture is required before running frame extraction.")
         print("--> Please capture a room following 'docs/CAPTURE_SOP.md' and place the video at:")
-        print(f"    sample_data/room_01/video/room_01_capture.mp4\n")
+        print(f"    sample_data/room_01/video/room_01_capture1.mp4\n")
         sys.exit(1)
 
     cap = cv2.VideoCapture(str(v_path))
@@ -91,12 +99,22 @@ def extract_frames(video_path: str, output_dir: str, interval_sec: float, min_bl
     print(f"FPS               : {fps:.2f}")
     print(f"Duration          : {duration_sec:.2f} seconds ({duration_sec/60:.2f} minutes)")
     print(f"Total Video Frames: {total_frames}")
-    print(f"Extraction Interval: Every {interval_sec:.2f} seconds")
+    print(f"Extraction Interval: Every {interval_sec:.2f} seconds (~{1.0/interval_sec:.1f} fps)")
     print(f"Target Output Dir : {out_dir}")
     print("=" * 60)
 
     out_dir.mkdir(parents=True, exist_ok=True)
     l_dir.mkdir(parents=True, exist_ok=True)
+
+    if clear_existing:
+        old_frames = list(out_dir.glob("frame_*.jpg"))
+        for f in old_frames:
+            try:
+                f.unlink()
+            except Exception:
+                pass
+        if old_frames:
+            print(f"[INFO] Cleared {len(old_frames)} existing frames in {out_dir}")
 
     frame_step = max(1, int(round(fps * interval_sec)))
     current_frame_idx = 0
@@ -160,5 +178,6 @@ if __name__ == "__main__":
         output_dir=args.output,
         interval_sec=args.interval,
         min_blur=args.min_blur_score,
-        log_dir=args.log_dir
+        log_dir=args.log_dir,
+        clear_existing=args.clear_existing
     )

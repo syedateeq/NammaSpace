@@ -32,9 +32,9 @@ Smartphone indoor capture
 | **Part 2** | Capture SOP & Dataset Preparation | **Completed** |
 | **Part 3** | 3D Reconstruction Pipeline | **In progress** — pending real capture |
 | **Part 4** | Web 3D Viewer & First-Person Roaming | **In progress** |
-| **Part 5** | POI Labeling & Search | **Planned** |
-| **Part 6** | Desktop Pathfinding | **Planned** |
-| **Part 7** | Final Polish & Submission | **Planned** |
+| **Part 5** | POI Labeling, Search & Selection | **Completed** (Round 2) |
+| **Part 6** | Desktop Pathfinding & 3D Route Display | **Completed** (Round 2) |
+| **Part 7** | Final Polish & Submission | **In progress** |
 
 ---
 
@@ -54,7 +54,7 @@ Smartphone indoor capture
 - [x] Provide room documentation and tracking checklist in `sample_data/room_01/README.md`
 - [x] Create `DATASET_GUIDE.md` covering storage, naming conventions, and Git hygiene
 
-### Part 3 — 3D Reconstruction Pipeline (In progress — pending real capture)
+### Part 3 — 3D Reconstruction Pipeline (Completed)
 - [x] Inspect Python environment, libraries, and hardware capabilities
 - [x] Establish `reconstruction/` folder layout (`scripts/`, `input/`, `frames/`, `output/`, `logs/`)
 - [x] Create `reconstruction/requirements.txt` with OpenCV, NumPy, SciPy, Pillow, and Trimesh
@@ -62,34 +62,39 @@ Smartphone indoor capture
 - [x] Build `scripts/reconstruct.py` with feature matching, camera pose recovery, and web-ready GLB export
 - [x] Create `reconstruction/config.json` configuration manifest
 - [x] Document usage, commands, and troubleshooting in `reconstruction/README.md`
-- [ ] User places physical capture video in `sample_data/room_01/video/room_01_capture.mp4`
-- [ ] Run end-to-end pipeline to generate `reconstruction/output/room_01.glb`
+- [x] Generated `reconstruction/output/room_01.glb` and placed in `frontend/public/models/room_01.glb`
 
-### Part 4 — Web 3D Viewer & First-Person Roaming (In progress)
+### Part 4 — Web 3D Viewer & First-Person Roaming (Completed)
 - [x] Create `Scene.tsx` — React Three Fiber canvas with lighting, fog, and floor grid
 - [x] Create `ModelViewer.tsx` — GLTF/GLB loader with auto-scale, positioning, and graceful missing/error states
 - [x] Create `FirstPersonControls.tsx` — Pointer Lock API mouse look + WASD movement
 - [x] Create `ViewerHUD.tsx` — Overlay with branding, state messages, and controls legend
 - [x] Create `utils/collision.ts` — Movement boundary stub for future collision detection
 - [x] Integrate viewer into App.tsx with landing page ↔ viewer navigation
-- [x] Handle missing model state ("3D room model not available yet.")
-- [ ] Place real `room_01.glb` in `frontend/public/models/` after reconstruction
 
----
+### Part 5 — POI Labeling, Search & Selection (Completed — Round 2)
+- [x] POI data model in `frontend/src/types/poi.ts` (`id, name, category, description, position, icon, floor`)
+- [x] Sample POI dataset in `frontend/src/data/pois.ts` (9 realistic indoor landmarks tuned inside room bounds)
+- [x] 3D markers in `frontend/src/components/POIMarkers.tsx` (glowing spheres, pulsing rings, hover badges, floor beams)
+- [x] Sidebar UI in `frontend/src/components/POIPanel.tsx` & `POIPanel.css` (real-time fuzzy search, category filter chips, selection state, detail strip)
+- [x] Camera observation transition ("Go To" POI) via cubic ease-out slerp/lerp in `Scene.tsx`
 
-## Future Phases
+### Part 6 — Desktop Pathfinding & 3D Route Display (Completed — Round 2)
+- [x] Navigation module in `frontend/src/navigation/`:
+  - `navigationTypes.ts`: types for grid nodes, obstacles, and path results
+  - `navigationData.ts`: 2D navigation grid config (0.25m resolution) & obstacle bounds
+  - `navigationGraph.ts`: 2D floor grid, obstacle masking, 8-way connectivity with corner-cutting prevention
+  - `pathfinding.ts`: A* engine with Min-Heap, Euclidean heuristic, line-of-sight smoothing, and metric distance
+- [x] Player position exposure: `PlayerPositionTracker` extracts genuine `camera.position` from `FirstPersonControls`
+- [x] 3D Visual Walking Path in `frontend/src/components/NavigationPath.tsx` (glowing cyan spline tube at Y = 0.08m, directional breadcrumbs, departure ring, arrival beacon)
+- [x] Navigation UI in `POIPanel.tsx`:
+  - `[ 🧭 Navigate ]` button on POI cards and detail strip
+  - Active route card showing target name, metric distance, and waypoints count
+  - `[ Clear Route ]` button to dismiss route
+  - `[ ↻ Recalculate ]` button to update route from the player's updated position
+- [x] Design Rationale: Navigation uses a manually configured 2D grid rather than automatic mesh extraction, ensuring reliable indoor navigation given the imperfect reconstruction.
 
-### Part 5 — POI Labeling & Search
-- Add interactive Point-of-Interest markers in the 3D scene
-- Implement room/item text search with camera fly-to
-- Provide a searchable sidebar/panel
-
-### Part 6 — Desktop Pathfinding
-- Implement obstacle-aware navigation mesh
-- A*/Dijkstra pathfinding between POIs
-- Visual navigation path rendering in the 3D scene
-
-### Part 7 — Final Polish & Submission
-- End-to-end demo with real reconstructed room
-- Performance optimization and UI polish
-- Documentation, demo video, and submission package
+### Part 7 — Final Polish & Submission (In progress)
+- [x] Browser automated verification of all POI and pathfinding features
+- [x] Full build verification (`npm run build`)
+- [ ] Submission artifacts & demo video documentation

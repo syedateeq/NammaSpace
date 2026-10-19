@@ -1,6 +1,6 @@
 {
   "room_id": "room_01",
-  "input_video": "../sample_data/room_01/video/room_01_capture.mp4",
+  "input_video": "../sample_data/room_01/video/room_01_capture1.mp4",
   "frame_directory": "./frames",
   "output_directory": "./output",
   "target_format": "glb"

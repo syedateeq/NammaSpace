@@ -1,10 +1,16 @@
 {
   "room_id": "room_01",
-  "engine": "opencv_sfm",
+  "engine": "incremental_sfm",
   "feature_detector": "SIFT",
-  "frames_processed": 35,
-  "total_3d_points": 1530,
-  "output_model": "output\\room_01.glb",
+  "total_video_frames": 94,
+  "registered_cameras": 94,
+  "raw_3d_points": 22540,
+  "cleaned_3d_points": 13746,
+  "mesh_faces": 20592,
+  "mesh_type": "hybrid",
+  "output_model": "reconstruction\\output\\room_01.glb",
   "output_format": "glb",
+  "file_size_bytes": 634680,
+  "file_size_kb": 619.8,
   "status": "success"
 }

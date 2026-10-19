@@ -1,5 +1,5 @@
 {
-  "video_path": "..\\sample_data\\room_01\\video\\room_01_capture1.mp4",
+  "video_path": "C:\\Users\\Neha Fathima\\OneDrive\\Desktop\\Jaspay\\NammaSpace\\sample_data\\room_01\\video\\room_01_capture1.mp4",
   "video_filename": "room_01_capture1.mp4",
   "resolution": "478x850",
   "width": 478,
@@ -7,8 +7,8 @@
   "fps": 29.98,
   "duration_seconds": 42.59,
   "total_video_frames": 1277,
-  "extraction_interval_seconds": 1.0,
-  "extracted_frames_count": 35,
-  "skipped_blurry_frames": 8,
+  "extraction_interval_seconds": 0.4,
+  "extracted_frames_count": 94,
+  "skipped_blurry_frames": 13,
   "status": "ready_for_reconstruction"
 }

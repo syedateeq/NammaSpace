@@ -27,13 +27,18 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Reconstruction outputs (future)
+# Reconstruction outputs
 reconstruction/output/
 reconstruction/__pycache__/
+reconstruction/scratch/
 *.ply
 *.obj
 *.glb
 *.gltf
+
+# Allow frontend model assets
+!frontend/public/models/*.glb
+!frontend/public/models/*.gltf
 
 # Temporary files
 *.tmp
