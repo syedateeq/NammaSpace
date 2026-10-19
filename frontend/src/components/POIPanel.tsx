@@ -325,7 +325,7 @@ export default function POIPanel({
             <div className="poi-route-box__header">
               <div className="poi-route-box__title">
                 <span className="poi-route-box__icon">🧭</span>
-                <strong>Route to {activeRoute.targetPoiName}</strong>
+                <strong>Route to: {activeRoute.targetPoiName}</strong>
               </div>
               <button
                 className="poi-route-box__close"
@@ -366,14 +366,14 @@ export default function POIPanel({
                     className="poi-route-btn poi-route-btn--recalc"
                     onClick={onRecalculateRoute}
                   >
-                    ↻ Recalculate
+                    Recalculate Route
                   </button>
                 </div>
               </>
             ) : (
               <div className="poi-route-box__error">
                 <span className="poi-route-error-icon">⚠️</span>
-                <span>{activeRoute.message || 'No walkable route found.'}</span>
+                <span>No walkable route found.</span>
               </div>
             )}
           </div>

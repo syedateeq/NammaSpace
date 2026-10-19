@@ -2,7 +2,7 @@
  * Scene — The main React Three Fiber 3D scene for the Namma Space viewer.
  *
  * Renders the Canvas, lighting, environment, model, first-person controls,
- * POI 3D markers, camera navigation ("Go To" POI), and real-time A* pathfinding
+ * POI 3D markers, camera observation ("Go To" POI), and real-time A* pathfinding
  * visualization ("Navigate" POI).
  */
 
@@ -133,6 +133,7 @@ function CameraNavigator({
 export default function Scene() {
   const [viewerState, setViewerState] = useState<ViewerState>('loading')
   const [errorMsg, setErrorMsg] = useState<string>()
+  const [isPointerLocked, setIsPointerLocked] = useState(false)
 
   // POI state
   const [selectedPOI, setSelectedPOI] = useState<string | null>(null)
@@ -250,7 +251,7 @@ export default function Scene() {
         <NavigationPath route={currentRoute} />
 
         {/* First-person camera controls */}
-        <FirstPersonControls />
+        <FirstPersonControls onLockChange={setIsPointerLocked} />
 
         {/* Real-time player coordinate tracker */}
         <PlayerPositionTracker onPositionUpdate={handlePositionUpdate} />
@@ -263,7 +264,14 @@ export default function Scene() {
       </Canvas>
 
       {/* HUD overlay */}
-      <ViewerHUD state={viewerState} errorMessage={errorMsg} />
+      <ViewerHUD
+        state={viewerState}
+        errorMessage={errorMsg}
+        isLocked={isPointerLocked}
+        activeRoute={currentRoute}
+        onClearRoute={handleClearRoute}
+        onRecalculateRoute={handleRecalculateRoute}
+      />
 
       {/* POI & Navigation Panel overlay */}
       <POIPanel

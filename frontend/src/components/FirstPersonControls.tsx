@@ -17,7 +17,11 @@ const CAMERA_HEIGHT = 1.6     // Approximate eye height in meters
 const MIN_PITCH = -Math.PI / 3 // Look down limit (60°)
 const MAX_PITCH = Math.PI / 3  // Look up limit (60°)
 
-export default function FirstPersonControls() {
+interface FirstPersonControlsProps {
+  onLockChange?: (locked: boolean) => void
+}
+
+export default function FirstPersonControls({ onLockChange }: FirstPersonControlsProps = {}) {
   const { camera, gl } = useThree()
   const keys = useRef<Record<string, boolean>>({})
   const isLocked = useRef(false)
@@ -31,8 +35,10 @@ export default function FirstPersonControls() {
   useEffect(() => {
     const canvas = gl.domElement
 
-    const onLockChange = () => {
-      isLocked.current = document.pointerLockElement === canvas
+    const handleLockChange = () => {
+      const locked = document.pointerLockElement === canvas
+      isLocked.current = locked
+      onLockChange?.(locked)
     }
 
     const onMouseMove = (e: MouseEvent) => {
@@ -53,19 +59,19 @@ export default function FirstPersonControls() {
     }
 
     canvas.addEventListener('click', requestLock)
-    document.addEventListener('pointerlockchange', onLockChange)
+    document.addEventListener('pointerlockchange', handleLockChange)
     document.addEventListener('mousemove', onMouseMove)
     document.addEventListener('keydown', onKeyDown)
     document.addEventListener('keyup', onKeyUp)
 
     return () => {
       canvas.removeEventListener('click', requestLock)
-      document.removeEventListener('pointerlockchange', onLockChange)
+      document.removeEventListener('pointerlockchange', handleLockChange)
       document.removeEventListener('mousemove', onMouseMove)
       document.removeEventListener('keydown', onKeyDown)
       document.removeEventListener('keyup', onKeyUp)
     }
-  }, [camera, gl, requestLock])
+  }, [camera, gl, requestLock, onLockChange])
 
   // ---------- Movement loop ----------
   useFrame((_, delta) => {
